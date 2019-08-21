@@ -1,19 +1,51 @@
-__Getting started with Kubernetes__
+**Container Platforms**
 
-Note:
-Ajay Addepalle
-*Aug 2019*
+
+---
+**Pivotal Cloud Foundry**
+
+PCF is a **P**latform **a**s **a** **S**ervice offering by Pivotal
+
+ 
+*(an enterprise offering of the Cloud Foundry Foundation's open source platfor, along with IBM, SAP & others )*
+
+===
+
+* PCF can be hosted on any public cloud/private data centers.
+* Handles operational complexity such as O.S patching & updates being by the platform without app down-times.
+* Provides scaling, monitoring, self-healing, logging & metrics.
+* Uses build-packs to reduce risk, app setup complexity; increase security providing auditing features.
+* Manages networking such as app routing, TLS termination
+ 
+===
+
+* Supports account isolation & control using org, space & roles with RBAC
+* Provides build-packs for most languages & deployment types
+* Provides easy to use bindable services such as SSO, Databases, Caches, MQs
+* Can define custom build packs & services to publish in its marketplace
+* Uses container technology (just does not expose runtime to )
+
+===
+
+__Upsides__
+* Simpler platform to support, central operations team manages infra for whole org
+* Better security controls as attack surface is reduced
+* Easy onboarding, an app just works with build packs!
+* Most features required to productionise an app are build into the platform.
+
+__Downsides__
+* Expensive! Pay for Platform & infrastructure.
+* Native cloud solutions are a lot more affordable but complex to get such features.
+* Need to build app according to it's defined patterns for easy usage.
+* Locked into apps, services constructs
 
 ---
 
-__Agenda:__
-<br/>
-
-- TBD, add links to markdown headers
+**Kubernetes**
 
 ---
 
-__Kubernetes is__
+**Kubernetes is**
 <br/>
 <!-- .slide: style="text-align: justified;"> -->
 - open sourced project
@@ -58,7 +90,7 @@ for detailed report
 
 ---
 
-__Quick Architecture Overview__  
+**Quick Architecture Overview**  
 
 <br/>
 
@@ -128,7 +160,7 @@ using open container initiative)
 
 ---
 
-__Kubernetes Objects__
+**Kubernetes Objects**
 
 Kubernetes uses Objects to represent the state of a cluster, the objects are persisted & they describe:
 * what containers are running
@@ -139,7 +171,7 @@ Kubernetes API & kubectl are the two ways to create, modify or delete objects.
 
 ---
 
-__Namespaces__
+**Namespaces**
 
 Namespaces are used to support multiple virtual clusters backed by a single physical cluster.
 <br/>
@@ -160,7 +192,7 @@ Names of resources need only be unique in a namespace, but not across namespaces
 
 ---
 
-__Labels & Selectors__
+**Labels & Selectors**
 
 Labels are key/value pairs that are attached to objects,<br/>
 used to identify objects & organize them
@@ -191,12 +223,12 @@ kubectl get pods --field-selector status.phase=Running
 
 ---
 
-__Kubernetes Pods__
+**Kubernetes Pods**
 
 * Pods are the smallest deployed object in Kubernetes object model which can contain one or more containers.
 * Pods are scaled horizontally by spinning up multiple Pods via _replication_. This group abstraction is called a Controller.
-* Pods can have __init containers__ as well as __app containers__.
-* Pods provide two kinds of shared resources in a container: __networking__ & __storage__.
+* Pods can have **init containers** as well as **app containers**.
+* Pods provide two kinds of shared resources in a container: **networking** & **storage**.
 * Pods are scheduled by the master's scheduler on run on nodes via the kubelet 
 
 
@@ -216,7 +248,7 @@ container needs to be restarted.
 
 ---
 
-__Pod Lifecycle__
+**Pod Lifecycle**
 
 A given pod's status reflects a high-level summary where it is in its lifecycle.
 These are the various possibile phases:
@@ -242,7 +274,7 @@ from all services using the Pod.
 
 ---
 
-__Controllers__
+**Controllers**
 
 Controller can create, manage multiple Pods, handle replication, roll-out, self-healing capabilities at a cluster.
 
@@ -276,7 +308,7 @@ Names for template resources should be unique in a cluster
 
 ---
 
-__ReplicaSet__
+**ReplicaSet**
 
 A ReplicaSet's purpose is to maintain a stable set of Pods running at any given time.
 A selector is defined along with the number of replicas to maintain & the corresponding Pod Template.
@@ -308,7 +340,7 @@ spec:
 
 ---
 
-__Deployments__
+**Deployments**
  
 Deployment controllers provides declarative updates for Pods & ReplicaSets by describing the desired state.
  
@@ -359,7 +391,7 @@ kubectl describe deployments
 
 ---
 
-__Services__
+**Services**
 Services is an abstraction that define a logical set of Pods & a policy by which to access them.
 Kubernetes assigns a service an IP address which is used by Service proxies (kube-proxy).
 
@@ -390,15 +422,15 @@ updated frequently.
 
 
 ---
-__Show securing service & exposing pods to a cluster__
+**Show securing service & exposing pods to a cluster**
 
 https://kubernetes.io/docs/concepts/services-networking/connect-applications-service/
 
 
 ---
 
-__Hands On__
-__use https://ngrok.com/ for tests https://www.chenhuijing.com/blog/tunnelling-services-for-exposing-localhost-to-the-web/__
+**Hands On**
+**use https://ngrok.com/ for tests https://www.chenhuijing.com/blog/tunnelling-services-for-exposing-localhost-to-the-web/**
 Using the kubectl Command-line
 Configuring Pods and Containers
 Accessing Applications in a Cluster
