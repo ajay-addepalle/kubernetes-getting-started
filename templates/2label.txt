@@ -1,0 +1,6 @@
+kubectl apply -f 2label.yaml
+kubectl get pods --show-labels
+kubectl label pods node-lube-pod appid=AP123456
+kubectl get pods --selector appid=AP123456
+kubectl get pods -l 'env in (dev),appid in(AP123456)'
+kubectl delete pod node-kube-pod
