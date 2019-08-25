@@ -1,0 +1,4 @@
+kubectl apply -f 1pod.yaml
+kubectl get pods
+kubectl exec -it node-kube-pod -- /bin/sh
+
