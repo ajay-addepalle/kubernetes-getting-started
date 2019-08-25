@@ -1,7 +1,7 @@
 FROM node:10-alpine
-WORKDIR /app
-COPY package*.json /app/
+WORKDIR /usr/src/app
+COPY package*.json ./
 RUN npm install
-COPY . /app
-EXPOSE 8080
-CMD [ "node", "server.js" ]
+COPY . .
+EXPOSE 4080
+CMD node server.js

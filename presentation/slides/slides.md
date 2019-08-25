@@ -1,14 +1,14 @@
 **Container Platforms**
 
-
 ---
 **Pivotal Cloud Foundry**
 
-PCF is a **P**latform **a**s **a** **S**ervice offering by Pivotal
+PCF is a **P**latform **a**s **a** **S**ervice offering by Pivotal.
+PaaS provides users with a platform & environment for developing, managing & running applications.
 
- 
-*(an enterprise offering of the Cloud Foundry Foundation's open source platfor, along with IBM, SAP & others )*
-
+Note:
+    * (an enterprise offering of the Cloud Foundry Foundation's open source platform, along with IBM, SAP & others )*
+    * paas reduces the complexity of building applications
 ===
 
 * PCF can be hosted on any public cloud/private data centers.
@@ -16,6 +16,7 @@ PCF is a **P**latform **a**s **a** **S**ervice offering by Pivotal
 * Provides scaling, monitoring, self-healing, logging & metrics.
 * Uses build-packs to reduce risk, app setup complexity; increase security providing auditing features.
 * Manages networking such as app routing, TLS termination
+* and so on...
  
 ===
 
@@ -23,21 +24,26 @@ PCF is a **P**latform **a**s **a** **S**ervice offering by Pivotal
 * Provides build-packs for most languages & deployment types
 * Provides easy to use bindable services such as SSO, Databases, Caches, MQs
 * Can define custom build packs & services to publish in its marketplace
-* Uses container technology (just does not expose runtime to )
+* Uses container technology (just does not expose it's runtime )
+* and so on...
 
 ===
 
-__Upsides__
+**Upsides**
 * Simpler platform to support, central operations team manages infra for whole org
 * Better security controls as attack surface is reduced
 * Easy onboarding, an app just works with build packs!
 * Most features required to productionise an app are build into the platform.
 
-__Downsides__
+===
+
+**Downsides**
 * Expensive! Pay for Platform & infrastructure.
-* Native cloud solutions are a lot more affordable but complex to get such features.
-* Need to build app according to it's defined patterns for easy usage.
-* Locked into apps, services constructs
+* Only portable between Cloud Foundry platforms
+* Locked into PCF's definition of apps, services constructs.
+* Lesser control of the underlying constructs.
+* Lesser flexibility due to BOSH deployment manager complexity & Diego.
+* No support for multi-regions, requires customization of the platform.
 
 ---
 
@@ -48,15 +54,15 @@ __Downsides__
 **Kubernetes is**
 <br/>
 <!-- .slide: style="text-align: justified;"> -->
-- open sourced project
-- ~~~~~orchestrates~~~~~ ↝ <sup>maintains</sup> required compute, storage & networking for user workloads
+- ~~~~~orchestrates~~~~~ ↝ <sup>maintains</sup> required compute, storage & networking
 - supports containers across multiple hosts
 - deploys, maintains & scales applications
 - the leading container management platform on public cloud workloads
+- open sourced project
 
 Note:
 Demonstrates PaaS like features with lifecycle management with IaaS like flexibility.
-Kubernetes is portable across multiple infrastructure providers deu to its IaaS.
+Kubernetes is portable across multiple infrastructure providers due to its IaaS.
 No vendor lock-in to a PaaS or IaaS
 
 No need for orchestration since kubernetes auto targets to maintain a desired state in a deployment 
@@ -76,7 +82,7 @@ _*Cloud Native Computing Foundation_
 
 ===
 
-_Kubernetes Environment vs. Container Environment_
+*Kubernetes Environment vs. Container Environment*
 <!-- .element: style="font-size:50%;" -->
 
 <img src="../images/cncf_survey_graphics-13-1024x738.jpg" width="70%" height="70%"/>
@@ -89,24 +95,16 @@ See https://www.cncf.io/blog/2018/08/29/cncf-survey-use-of-cloud-native-technolo
 for detailed report
 
 ---
-
-**Quick Architecture Overview**  
-
-<br/>
+**Kubernetes Design**
 
 Works with _master_ - _node/worker_ design, with at least one master and multiple compute worker nodes.
 
-The _master_ node maintains desired state in the cluster.
+The _master_ maintains desired state in the cluster.
 
-The _worker nodes_ are responsible for providing the Kubernetes runtime.
+The _nodes_ are responsible for providing the Kubernetes runtime.
 
 Note:
 The master worker is similar to how Jenkins is structured
-
-The control plane is responsible to bring the cluster/app state to how it was described.
-The control plane's control loops will respond to changes in cluster by communicating between the master & 
-kubelet processes to make the state of all objects in the system match desired state. 
-_More on this later with the Deployment description._
 
 The worker nodes is where all the applications would be running.
 
@@ -144,6 +142,11 @@ _kube-controller-manager_: is the component that runs the controllers, they incl
 * endpoint controller populates the endpoints object i.e joins Services & Pods
 * Service Account & Token Controllers: creates default accounts, API access tokens for new namespaces
 
+The control plane is something that is responsible to bring the cluster/app state to how it was described.
+The control plane's control loops will respond to changes in cluster by communicating between the master & 
+kubelet processes to make the state of all objects in the system match desired state. 
+_More on this later with the Deployment description._
+
 ===
 
 ![Node](../images/Chart_04_Kubernetes-Node.png)
@@ -158,6 +161,8 @@ of a network to a pod.
 _container runtime_: software for running containers: docker, containerd, rktlet/rkt, cri-o (container runtime interface 
 using open container initiative)
 
+_fluentd_: data stream collector for logging
+
 ---
 
 **Kubernetes Objects**
@@ -168,6 +173,9 @@ Kubernetes uses Objects to represent the state of a cluster, the objects are per
 * policies on the applications, such as restart policies, upgrades and fault-tolerance
 
 Kubernetes API & kubectl are the two ways to create, modify or delete objects.
+
+Note:
+The object storage is managed by the etcd
 
 ---
 
@@ -222,9 +230,11 @@ Ex:
 kubectl get pods --field-selector status.phase=Running
 
 ---
-
 **Kubernetes Pods**
+<!-- .element: style="font-size:160%;" -->
 
+
+<!-- .slide: style="font-size:80%;"> -->
 * Pods are the smallest deployed object in Kubernetes object model which can contain one or more containers.
 * Pods are scaled horizontally by spinning up multiple Pods via _replication_. This group abstraction is called a Controller.
 * Pods can have **init containers** as well as **app containers**.
@@ -246,10 +256,16 @@ container needs to be restarted.
 
 [Container Design Patterns](https://kubernetes.io/blog/2016/06/container-design-patterns)
 
+<pre><code>
+
+</code></pre>
 ---
 
 **Pod Lifecycle**
+<!-- .element: style="font-size:160%;" -->
 
+
+<!-- .slide: style="font-size:60%;"> -->
 A given pod's status reflects a high-level summary where it is in its lifecycle.
 These are the various possibile phases:
 
@@ -258,14 +274,15 @@ These are the various possibile phases:
 * Succeeded
 * Failed
 * Unknown 
-
-To monitor a container, a container Probe performs a diagnostic periodically by the kubelet. The kubelet can call 
-three types of handlers:
+ 
+The kubelet can probe containers with three types of handlers:
 
 * ExecAction: command inside container, success if exits with status code 0
 * TCPSocketAction: TCP check against container's IP address on a port, success if port is open
 * HTTPGetAction: HTTP GET on container's IP address on specified port and path, success if HTTP status > 200 & < 400
 
+---
+<!-- .slide: style="font-size:80%;"> -->
 Kubelet can additionally perform two kinds of probes:
 
 * livenessProbe: indicates if the container is running. If not, the container is killed and pushed through restart policy.
@@ -275,7 +292,10 @@ from all services using the Pod.
 ---
 
 **Controllers**
+<!-- .element: style="font-size:160%;" -->
 
+
+<!-- .slide: style="font-size:80%;"> -->
 Controller can create, manage multiple Pods, handle replication, roll-out, self-healing capabilities at a cluster.
 
 Controllers use a Pod Template that is provided by the user to create the Pods.
@@ -309,7 +329,10 @@ Names for template resources should be unique in a cluster
 ---
 
 **ReplicaSet**
+<!-- .element: style="font-size:160%;" -->
 
+
+<!-- .slide: style="font-size:60%;"> -->
 A ReplicaSet's purpose is to maintain a stable set of Pods running at any given time.
 A selector is defined along with the number of replicas to maintain & the corresponding Pod Template.
 ReplicaSet then creates & deletes Pods as needed.
@@ -341,7 +364,10 @@ spec:
 ---
 
 **Deployments**
+ <!-- .element: style="font-size:160%;" -->
  
+ 
+ <!-- .slide: style="font-size:80%;"> -->
 Deployment controllers provides declarative updates for Pods & ReplicaSets by describing the desired state.
  
 <pre><code lang="yaml">
@@ -392,6 +418,7 @@ kubectl describe deployments
 ---
 
 **Services**
+
 Services is an abstraction that define a logical set of Pods & a policy by which to access them.
 Kubernetes assigns a service an IP address which is used by Service proxies (kube-proxy).
 
@@ -420,8 +447,13 @@ In the example provided the service binds to the selector. It binds the incoming
 When comparing to DNS A records & using round robin for IP resolution, DNS results are frequently cached which causes issues when the A record's values are 
 updated frequently. 
 
+---
+
+Show stateful sets
+https://kubernetes.io/docs/tutorials/stateful-application/basic-stateful-set/
 
 ---
+
 **Show securing service & exposing pods to a cluster**
 
 https://kubernetes.io/docs/concepts/services-networking/connect-applications-service/
