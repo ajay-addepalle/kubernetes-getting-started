@@ -5,8 +5,17 @@ kubectl get pods
 kubectl exec -it node-kube-deploy-6f6c64b657-f2rt9 -- /bin/sh
 curl localhost:4080
 
+kubectl rollout history deployment node-kube-deploy
+
+
 [update the template container image with new version]
 watch -n 0.5 kubectl get pods
 kubectl apply -f 3deployment.yaml
 kubectl exec -it node-kube-deploy-6f6c64b657-f2rt9 -- /bin/sh
 curl localhost:4080
+
+kubectl rollout history deployment node-kube-deploy
+kubectl rollout undo deploy/node-kube-deploy --to-revision=1
+kubectl rollout history deploy/node-kube-deploy
+kubectl get pods
+kubectl delete deploy node-kube-deploy

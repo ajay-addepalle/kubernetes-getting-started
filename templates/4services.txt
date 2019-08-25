@@ -1,0 +1,11 @@
+kubectl apply -f 4services.yaml 
+kubectl get pods -l app=node-kube
+kubectl describe pod node-kube-deploy-6fdddcc8f8-dnfmj 
+curl 172.17.0.3:4080
+kubectl get svc
+kubectl describe svc node-kube-service
+curl 10.96.180.75:4080
+minikube ssh
+curl 10.96.180.75:4080
+[Uses Virtual IP, in IP tables]
+sudo iptables-save | grep node-kube
