@@ -199,6 +199,97 @@ Note:
 Names of resources need only be unique in a namespace, but not across namespaces.
 
 ---
+**Kubernetes Pods**
+<!-- .element: style="font-size:140%;" -->
+
+
+<!-- .slide: style="font-size:80%;"> -->
+* Pods are the smallest deployed object in Kubernetes object model which can contain one or more containers.
+* Pods are scaled horizontally by spinning up multiple Pods via _replication_. This group abstraction is called a Controller.
+* Pods can have **init containers** as well as **app containers**.
+* Pods provide two kinds of shared resources in a container: **networking** & **storage**.
+* Pods are scheduled by the master's scheduler on run on nodes via the kubelet 
+
+
+Note:
+A pod encapsulates an application's container, storage, network IP & other options.
+It can encapsulate multiple applications composed of tightly coupled containers which need to share a resource.
+
+Pod networking: each pod has a unique IP address, the constituent containers in a pod share same IP space. Containers can 
+communicated with each other using localhost. Outbound traffic is via shared network ports. 
+
+Pod Storage: all containers share the data in the volume. Volumes allow persistent data in pod to survive in case one 
+container needs to be restarted.
+
+[The Distributed System Toolkit: Patterns for Composite Containers](https://kubernetes.io/blog/2015/06/the-distributed-system-toolkit-patterns/)
+
+[Container Design Patterns](https://kubernetes.io/blog/2016/06/container-design-patterns)
+
+---
+
+**Pod Lifecycle**
+<!-- .element: style="font-size:140%;" -->
+
+
+<!-- .slide: style="font-size:60%;"> -->
+A given pod's status reflects a high-level summary where it is in its lifecycle.
+These are the various possibile phases:
+
+* Pending
+* Running
+* Succeeded
+* Failed
+* Unknown 
+ 
+The kubelet can probe containers with three types of handlers:
+
+* ExecAction: command inside container, success if exits with status code 0
+* TCPSocketAction: TCP check against container's IP address on a port, success if port is open
+* HTTPGetAction: HTTP GET on container's IP address on specified port and path, success if HTTP status > 200 & < 400
+
+Note:
+
+DEMO
+Get cluster info: 
+
+kubectl cluster-info
+
+Get cluster node status:
+
+kubectl describe node <insert-node-name-here>
+
+kubectl get nodes -o yaml
+
+kubectl get pods -o yaml
+
+Best way to learn:
+
+kubectl explain pod,svc etc
+
+<hr>
+
+kubectl apply -f 1pod.yaml
+
+kubectl get pods
+
+kubectl describe pod node-kube-pod
+
+kubectl exec -it node-kube-pod -- /bin/sh
+
+kubectl get pods -o yaml
+
+kubectl delete pod node-kube-pod
+
+---
+
+<!-- .slide: style="font-size:80%;"> -->
+Kubelet can additionally perform two kinds of probes:
+
+* livenessProbe: indicates if the container is running. If not, the container is killed and pushed through restart policy.
+* readinessProbe: indicates if container is ready to serve requests, if failed the controller removes Pod's IP Address 
+from all services using the Pod.
+
+---
 
 **Labels & Selectors**
 
@@ -229,70 +320,25 @@ Additionally Field Selectors allow you to select Kubernetes resources by a resou
 Ex:
 kubectl get pods --field-selector status.phase=Running
 
----
-**Kubernetes Pods**
-<!-- .element: style="font-size:160%;" -->
+DEMO: 
 
+kubectl apply -f 2label.yaml
 
-<!-- .slide: style="font-size:80%;"> -->
-* Pods are the smallest deployed object in Kubernetes object model which can contain one or more containers.
-* Pods are scaled horizontally by spinning up multiple Pods via _replication_. This group abstraction is called a Controller.
-* Pods can have **init containers** as well as **app containers**.
-* Pods provide two kinds of shared resources in a container: **networking** & **storage**.
-* Pods are scheduled by the master's scheduler on run on nodes via the kubelet 
+kubectl get pods --show-labels
 
+kubectl label pods node-lube-pod appid=AP123456
 
-Note:
-A pod encapsulates an application's container, storage, network IP & other options.
-It can encapsulate multiple applications composed of tightly coupled containers which need to share a resource.
+kubectl get pods --selector appid=AP123456
 
-Pod networking: each pod has a unique IP address, the constituent containers in a pod share same IP space. Containers can 
-communicated with each other using localhost. Outbound traffic is via shared network ports. 
+kubectl get pods -l 'env in (dev),appid in(AP123456)'
 
-Pod Storage: all containers share the data in the volume. Volumes allow persistent data in pod to survive in case one 
-container needs to be restarted.
+kubectl delete pod node-kube-pod
 
-[The Distributed System Toolkit: Patterns for Composite Containers](https://kubernetes.io/blog/2015/06/the-distributed-system-toolkit-patterns/)
-
-[Container Design Patterns](https://kubernetes.io/blog/2016/06/container-design-patterns)
-
-<pre><code>
-
-</code></pre>
----
-
-**Pod Lifecycle**
-<!-- .element: style="font-size:160%;" -->
-
-
-<!-- .slide: style="font-size:60%;"> -->
-A given pod's status reflects a high-level summary where it is in its lifecycle.
-These are the various possibile phases:
-
-* Pending
-* Running
-* Succeeded
-* Failed
-* Unknown 
- 
-The kubelet can probe containers with three types of handlers:
-
-* ExecAction: command inside container, success if exits with status code 0
-* TCPSocketAction: TCP check against container's IP address on a port, success if port is open
-* HTTPGetAction: HTTP GET on container's IP address on specified port and path, success if HTTP status > 200 & < 400
-
----
-<!-- .slide: style="font-size:80%;"> -->
-Kubelet can additionally perform two kinds of probes:
-
-* livenessProbe: indicates if the container is running. If not, the container is killed and pushed through restart policy.
-* readinessProbe: indicates if container is ready to serve requests, if failed the controller removes Pod's IP Address 
-from all services using the Pod.
 
 ---
 
 **Controllers**
-<!-- .element: style="font-size:160%;" -->
+<!-- .element: style="font-size:140%;" -->
 
 
 <!-- .slide: style="font-size:80%;"> -->
@@ -329,7 +375,7 @@ Names for template resources should be unique in a cluster
 ---
 
 **ReplicaSet**
-<!-- .element: style="font-size:160%;" -->
+<!-- .element: style="font-size:140%;" -->
 
 
 <!-- .slide: style="font-size:60%;"> -->
@@ -364,7 +410,7 @@ spec:
 ---
 
 **Deployments**
- <!-- .element: style="font-size:160%;" -->
+ <!-- .element: style="font-size:140%;" -->
  
  
  <!-- .slide: style="font-size:80%;"> -->
@@ -407,18 +453,50 @@ Use cases:
 * Pause the Deployment
 * Clean up older ReplicaSets
 
-Running a deployment:
-kubectl apply -f https://k8s.io/examples/controllers/nginx-deployment.yaml
-kubectl rollout status deployment.v1.apps/nginx-deployment
-kubectl get deployments
+DEMO:
+
+kubectl apply -f 3deployment.yaml
+
+kubectl get deploy
+
 kubectl get rs
-kubectl get pods --show-labels
-kubectl describe deployments
+
+kubectl get pods
+
+kubectl exec -it node-kube-deploy-6f6c64b657-f2rt9 -- /bin/sh
+
+curl localhost:4080
+
+
+kubectl rollout history deployment node-kube-deploy
+
+[update the template container image with new version]
+
+watch -n 0.5 kubectl get pods
+
+kubectl apply -f 3deployment.yaml
+
+kubectl exec -it node-kube-deploy-6f6c64b657-f2rt9 -- /bin/sh
+
+curl localhost:4080
+
+kubectl rollout history deployment node-kube-deploy
+
+kubectl rollout undo deploy/node-kube-deploy --to-revision=1
+
+kubectl rollout history deploy/node-kube-deploy
+
+kubectl get pods
+
+kubectl delete deploy node-kube-deploy
 
 ---
 
 **Services**
-
+ <!-- .element: style="font-size:140%;" -->
+ 
+ 
+ <!-- .slide: style="font-size:80%;"> -->
 Services is an abstraction that define a logical set of Pods & a policy by which to access them.
 Kubernetes assigns a service an IP address which is used by Service proxies (kube-proxy).
 
@@ -447,22 +525,93 @@ In the example provided the service binds to the selector. It binds the incoming
 When comparing to DNS A records & using round robin for IP resolution, DNS results are frequently cached which causes issues when the A record's values are 
 updated frequently. 
 
----
+DEMO:
 
+kubectl apply -f 4services.yaml
+
+kubectl get pods -l app=node-kube
+
+kubectl describe pod node-kube-deploy-6fdddcc8f8-dnfmj 
+
+curl 172.17.0.3:4080
+
+kubectl get svc
+
+kubectl describe svc node-kube-service
+
+curl 10.96.180.75:4080
+
+minikube ssh
+
+[cluster]: curl 10.96.180.75:4080
+
+[Uses Virtual IP, in IP tables]
+
+[cluster]: sudo iptables-save | grep node-kube
+
+[Kubernetes DNS]
+
+kubectl get services kube-dns --namespace=kube-system
+
+---
+**Volumes**
+ <!-- .element: style="font-size:140%;" -->
+ 
+ 
+ <!-- .slide: style="font-size:80%;"> -->
+Kubernetes provides a Volume abstration to allow files to be persisted between Pod restarts & sharing files between \
+Containers in a Pod.
+
+Some well known types of volumes:
+* awsElasticBlockStore
+* azureDisk
+* configMap
+* emptyDir
+* hostPath
+* local
+* nfs
+* secret
+
+---
+**Secrets**
+ <!-- .element: style="font-size:140%;" -->
+ 
+ 
+ <!-- .slide: style="font-size:60%;"> -->
+Kuberenets lets you store sensitive information like passwords, tls private keys, OAuth tokens etc.
+
+Secret can be used inside Pods from a mounted volume or by kubelet when pulling images to set environment variables.
+
+<pre><code>
+>echo -n 'admin' > ./username.txt
+>echo -n '1f2d1e2e67df' > ./password.txt
+>kubectl create secret generic db-user-pass --from-file=./username.txt --from-file=./password.txt
+>kubectl get secrets
+
+NAME                  TYPE                                  DATA      AGE
+db-user-pass          Opaque                                2         51s
+
+kubectl describe secrets/db-user-pass
+
+Name:            db-user-pass
+Namespace:       default
+Labels:          <none>
+Annotations:     <none>
+
+Type:            Opaque
+
+Data
+-=-=-=
+password.txt:    12 bytes
+username.txt:    5 bytes
+</code></pre>
+
+---
 Note:
 
 kubectl get nodes -o yaml
 
 kubectl get pods -o yaml
-
-Show stateful sets
-https://kubernetes.io/docs/tutorials/stateful-application/basic-stateful-set/
-
-
-**Show securing service & exposing pods to a cluster**
-
-https://kubernetes.io/docs/concepts/services-networking/connect-applications-service/
-
 
 **Hands On**
 **use https://ngrok.com/ for tests https://www.chenhuijing.com/blog/tunnelling-services-for-exposing-localhost-to-the-web/**
@@ -472,25 +621,10 @@ Accessing Applications in a Cluster
 Monitoring, Logging, and Debugging
 Using TLS
 
-
-Get cluster info: 
-kubectl cluster-info
-
-Get cluster node status:
-kubectl describe node <insert-node-name-here>
-
 Apply a kube manifest:
 kubectl apply -f template.yaml
 
 kubectl diff -f template.yaml
-
-Get Pod details:
-kubectl get pod
-kubectl describe pod {podname}
-
-Best way to learn:
-kubectl explain pod,svc etc
-
 
 Running a deployment:
 kubectl apply -f https://k8s.io/examples/controllers/nginx-deployment.yaml
@@ -520,5 +654,13 @@ kubectl rollout pause deployment.v1.apps/nginx-deployment
 kubectl rollout resume deployment.v1.apps/nginx-deployment
 
 See this to control deployment strategies https://kubernetes.io/docs/concepts/workloads/controllers/deployment/
+
+
+Show stateful sets
+https://kubernetes.io/docs/tutorials/stateful-application/basic-stateful-set/
+
+**Show securing service & exposing pods to a cluster**
+
+https://kubernetes.io/docs/concepts/services-networking/connect-applications-service/
 
 ---
