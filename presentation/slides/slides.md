@@ -1,5 +1,3 @@
-**Container Platforms**
-
 ---
 **Pivotal Cloud Foundry**
 
@@ -48,10 +46,6 @@ Note:
 ---
 
 **Kubernetes**
-
----
-
-**Kubernetes is**
 <br/>
 <!-- .slide: style="text-align: justified;"> -->
 - ~~~~~orchestrates~~~~~ ↝ <sup>maintains</sup> required compute, storage & networking
@@ -365,12 +359,21 @@ spec:
 <br/>
 
 Note:
+
+I.e Contoller is reponsible of routine tasks to ensure the desired state of cluster matches the observed state. 
+
+Ex Replica Sets maintains the correct # of pods running.
+
+Ex: Node Controller checks the state of the server and responds to maser when node goes down. 
+
+
 If a node fails, the Controller might automatically replace the Pod by scheduling an identical replacement on a 
 different Node.
 
 Pod templates are specifications which are included in other objects such as Replication Controllers, Jobs, DaemonSets etc.
 
 Names for template resources should be unique in a cluster
+
 
 ---
 
@@ -665,12 +668,16 @@ Types of Ingress:
    [ Services ]
 </code></pre>
 
+===
+
 * Simple fanout / path based routing
 
 <pre><code>
 foo.bar.com -> 178.91.123.132 -> / foo    service1:4200
                                  / bar    service2:8080
 </code></pre>
+
+===
 
 * Name based virtual hosting
 
@@ -689,6 +696,45 @@ Name based virtual hosting provides finer grianed control over TLS
 
 ---
 
+**Limit Ranges**
+ <!-- .element: style="font-size:140%;" -->
+ 
+ 
+ <!-- .slide: style="font-size:60%;"> -->
+ 
+Containers by default run with unbounded compute resources on a Kubernetes cluser.
+Using Resource quotas, the cluster can be configured to limit the resource consumption in a namespace.
+
+Within a namespace as well, individual pods could use all the resources available in a namespace. To limit this, a 
+Limit Range can be applied in the Pod.
+
+<pre><code lang="yaml">
+apiVersion: v1
+kind: LimitRange
+metadata:
+  name: limit-mem-cpu-per-container
+spec:
+  limits:
+  - max:
+      cpu: "800m"
+      memory: "1Gi"
+    min:
+      cpu: "100m"
+      memory: "99Mi"
+    default:
+      cpu: "700m"
+      memory: "900Mi"
+</code></pre>
+
+Limits can also be enforced on Storage & Kubernetes Objects
+
+Note:
+
+The cpu limits are complicated due to calculation of cpu time.
+The m in 700m means it needs 700/1000 of a core (70%). The limits are enforced using the cgroup mechamism of the O.S.
+
+
+---
 
 Note:
 
