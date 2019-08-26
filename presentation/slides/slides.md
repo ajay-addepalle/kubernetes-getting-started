@@ -572,6 +572,23 @@ Some well known types of volumes:
 * nfs
 * secret
 
+Note:
+kubectl apply -f 5volumes.yaml
+
+kubectl exec -it sharevol -c container1 -- /bin/sh
+
+curl localhost:4080
+
+vi /cache1/data.txt
+
+curl localhost:4080
+
+kubectl exec -it sharevol -c container2 -- /bin/sha
+
+vi /cache2/data.txt
+
+curl localhost:4080
+
 ---
 **Secrets**
  <!-- .element: style="font-size:140%;" -->
@@ -606,7 +623,73 @@ password.txt:    12 bytes
 username.txt:    5 bytes
 </code></pre>
 
+Note:
+
+
+echo -n "password"  > ./password.txt
+
+kubectl create secret generic mysecret2 --from-file=./password.txt
+
+kubectl describe secrets/mysecret2
+
+kubectl apply -f 6secrets.yaml
+
+kubectl get secrets
+
+kubectl describe secrets mysecret1
+
+kubectl exec -it consumesec -- /bin/sh
+
 ---
+
+**Ingress & Service Discovery**
+ <!-- .element: style="font-size:140%;" -->
+ 
+ 
+ <!-- .slide: style="font-size:60%;"> -->
+ 
+An ingress exposes HTTP & HTTPS routes originating from outside the cluster to service within the cluster.
+
+The routing is controlled by *rules* defined on Ingress. 
+
+Ingress can also load balance traffic, terminal SSL/TLS & name based virt. hosting.
+
+Types of Ingress:
+* Single service Ingress
+
+<pre><code>
+    internet
+        |
+   [ Ingress ]
+   --|-----|--
+   [ Services ]
+</code></pre>
+
+* Simple fanout / path based routing
+
+<pre><code>
+foo.bar.com -> 178.91.123.132 -> / foo    service1:4200
+                                 / bar    service2:8080
+</code></pre>
+
+* Name based virtual hosting
+
+<pre><code>
+foo.bar.com --|                 |-> foo.bar.com service1:80
+              | 178.91.123.132  |
+bar.foo.com --|                 |-> bar.foo.com service2:80
+</code></pre>
+
+Note:
+Single service ingress increase the operational complexity & attack plane
+
+Simple fanout provides a single entry point to services cluster
+
+Name based virtual hosting provides finer grianed control over TLS
+
+---
+
+
 Note:
 
 kubectl get nodes -o yaml
