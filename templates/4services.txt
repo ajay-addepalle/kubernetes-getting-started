@@ -6,6 +6,11 @@ kubectl get svc
 kubectl describe svc node-kube-service
 curl 10.96.180.75:4080
 minikube ssh
-curl 10.96.180.75:4080
+[cluster]: curl 10.96.180.75:4080
 [Uses Virtual IP, in IP tables]
-sudo iptables-save | grep node-kube
+[cluster]: sudo iptables-save | grep node-kube
+
+[Kubernetes DNS]
+kubectl get services kube-dns --namespace=kube-system
+
+

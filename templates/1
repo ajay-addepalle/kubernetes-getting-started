@@ -1,0 +1,8 @@
+echo -n "somepassword" > ./password.txt
+kubectl create secret generic mysecret2 --from-file=./password.txt
+kubectl describe secrets/mysecret2
+kubectl apply -f 6secrets.yaml
+kubectl get secrets
+kubectl describe secrets mysecret1
+kubectl exec -it consumesec -- /bin/sh
+

@@ -449,17 +449,20 @@ updated frequently.
 
 ---
 
+Note:
+
+kubectl get nodes -o yaml
+
+kubectl get pods -o yaml
+
 Show stateful sets
 https://kubernetes.io/docs/tutorials/stateful-application/basic-stateful-set/
 
----
 
 **Show securing service & exposing pods to a cluster**
 
 https://kubernetes.io/docs/concepts/services-networking/connect-applications-service/
 
-
----
 
 **Hands On**
 **use https://ngrok.com/ for tests https://www.chenhuijing.com/blog/tunnelling-services-for-exposing-localhost-to-the-web/**
@@ -469,8 +472,6 @@ Accessing Applications in a Cluster
 Monitoring, Logging, and Debugging
 Using TLS
 
-
-Note:
 
 Get cluster info: 
 kubectl cluster-info

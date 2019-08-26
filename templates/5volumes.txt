@@ -1,0 +1,9 @@
+kubectl apply -f 5volumes.yaml
+kubectl exec -it sharevol -c container1 -- /bin/sh
+curl localhost:4080
+vi /cache1/data.txt
+curl localhost:4080
+
+kubectl exec -it sharevol -c container2 -- /bin/sha
+vi /cache2/data.txt
+curl localhost:4080

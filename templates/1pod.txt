@@ -2,4 +2,5 @@ kubectl apply -f 1pod.yaml
 kubectl get pods
 kubectl describe pod node-kube-pod
 kubectl exec -it node-kube-pod -- /bin/sh
+kubectl get pods -o yaml
 kubectl delete pod node-kube-pod
